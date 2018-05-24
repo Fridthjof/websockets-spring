@@ -26,28 +26,26 @@ public class WebSocketController {
     }
 
     @MessageMapping("/responseData")
-    public JSONObject onReceivedMessage(String message) {
+    public void onReceivedMessage(String message) {
         System.out.println(message);
-        this.template.convertAndSend("/data", makeRandomData(220));
-        System.out.println(this.template.getUserDestinationPrefix());
-
-        this.template.convertAndSend("/data", makeRandomData(2000));
-        System.out.println("Received Msg in OnReceivedMessage");
+//        this.template.convertAndSend("/data", makeRandomData());
+//        System.out.println(this.template.getUserDestinationPrefix());
+//
+//        this.template.convertAndSend("/data", makeRandomData());
+//        System.out.println("Received Msg in OnReceivedMessage");
         Object obj = new Object();
         int timesOfLoop = 0;
         try {
             synchronized (obj) {
-                while (timesOfLoop < 5) {//Or any Loops
-                    this.template.convertAndSend("/data", makeRandomData(22));
-                    obj.wait(1000);//Sample obj.wait(1000); 1 second sleep
+                while (timesOfLoop < 300) {//Or any Loops
+                    this.template.convertAndSend("/data", makeRandomData());
+                    obj.wait(5000);//Sample obj.wait(1000); 1 second sleep
                     timesOfLoop++;
-                    System.out.println("Created an Object");
+                    System.out.println("Created an Object and send");
                 }
             }
         } catch (InterruptedException ex) {
         }
-        System.out.println("poop");
-        return makeRandomData(4000);
     }
 
     private void onDataAction() {
@@ -56,7 +54,7 @@ public class WebSocketController {
     }
 
 
-    private JSONObject makeRandomData(int i) {
+    private JSONObject makeRandomData() {
 
         JSONObject jsonObject = new JSONObject();
 
@@ -64,7 +62,7 @@ public class WebSocketController {
             jsonObject.put("data1", ThreadLocalRandom.current().nextInt(0, 9 + 1));
             jsonObject.put("data2", ThreadLocalRandom.current().nextInt(0, 9 + 1));
             jsonObject.put("data3", ThreadLocalRandom.current().nextInt(0, 9 + 1));
-            jsonObject.put("data4", ThreadLocalRandom.current().nextInt(0, 9 + 1));
+            jsonObject.put("data4", ThreadLocalRandom.current().nextInt(25, 89 + 1));
             jsonObject.put("data5", ThreadLocalRandom.current().nextInt(0, 9 + 1));
             jsonObject.put("timestamp", System.currentTimeMillis());
 
@@ -77,7 +75,7 @@ public class WebSocketController {
 
     @SubscribeMapping("/data")
     public List initDataConnection() {
-        makeRandomData(1);
+        makeRandomData();
         System.out.println("Subscription on data");
         return liveDataTest;
     }
